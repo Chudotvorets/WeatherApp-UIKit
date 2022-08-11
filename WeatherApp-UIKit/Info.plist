@@ -23,5 +23,7 @@
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Приложение запрашивает доступ к местоположению</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string></string>
 </dict>
 </plist>
