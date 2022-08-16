@@ -19,6 +19,8 @@ final class ViewController: UIViewController {
     
     var networkService = NetworkWeatherManager()
 
+    @IBOutlet weak var searhBar: UISearchBar!
+    
     @IBOutlet weak var cityNameLabel: UILabel!
     
     @IBOutlet weak var weatherDiscriptionLabel: UILabel!
@@ -29,11 +31,13 @@ final class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-       startLocationManager()
+        startLocationManager()
+        searhBar.delegate = self
     
     }
     
 //MARK: - Func
+    
     
     private func updateView() {
         cityNameLabel.text = model.name
@@ -54,16 +58,29 @@ final class ViewController: UIViewController {
     }
 }
 
-//MARK: - extension
+//MARK: - extension CLLocationManagerDelegate
 
 extension ViewController: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         if let lastLocation = locations.last {
             print(lastLocation.coordinate.latitude, lastLocation.coordinate.longitude)
             networkService.updateWeatherInfo(latitude: lastLocation.coordinate.latitude, longtitude: lastLocation.coordinate.longitude) { [weak self] data in
-                if let strongSelf = self {
-                    strongSelf.model = data
-                    strongSelf.updateView()
+                if let self = self {
+                    self.model = data
+                    self.updateView()
+                }
+            }
+        }
+    }
+}
+extension ViewController: UISearchBarDelegate {
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            self.networkService.searchWeatherInfo(city: searchText) { [weak self] data in
+                if let self = self {
+                    self.model = data
+                    self.updateView()
                 }
             }
         }

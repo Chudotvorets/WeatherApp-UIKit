@@ -26,4 +26,19 @@ final class NetworkWeatherManager {
             }
         }
     }
+    func searchWeatherInfo(city: String, completion: @escaping (WeatherData) -> Void) {
+        AF.request("https://api.openweathermap.org/data/2.5/weather?q=\(city)&units=metric&lang=ru&appid=be5a408cbd24596b8e3d293c7de6a60b",method: .get).response { data in
+            switch data.result {
+            case .success(let data):
+                if let data = data {
+                    if let result = try? JSONDecoder().decode(WeatherData.self, from: data) {
+                        completion(result)
+                    }
+                }
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+        }
+    }
 }
+
